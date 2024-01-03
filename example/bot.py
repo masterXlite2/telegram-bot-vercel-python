@@ -1,32 +1,27 @@
-from telegram import Update
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    ContextTypes,
-)
+import telebot
 from os import getenv
 
-# Define a few command handlers.
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_html(text="hello world!")
-async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_html(text="help me!")
+# Initialize the bot with your token
+bot = telebot.TeleBot(getenv("TOKEN"))
 
-async def bot_tele(text):
-    # Create application
-    application = (
-        Application.builder().token(getenv("TOKEN")).build()
-    )
+# Define command handlers
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.reply_to(message, "hello world!")
 
-    # Add handlers
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help))
+@bot.message_handler(commands=['help'])
+def help(message):
+    bot.reply_to(message, "help me!")
 
-    # Start application
-    await application.bot.set_webhook(url=getenv("webhook"))
-    await application.update_queue.put(
-            Update.de_json(data=text, bot=application.bot)
-        )
-    async with application:
-        await application.start()
-        await application.stop()
+# Set webhook and handle updates
+@bot.message_handler(func=lambda message: True)
+def handle_all_messages(message):
+    bot.reply_to(message, "Received message: " + message.text)
+
+if __name__ == "__main__":
+    # Set webhook
+    bot.remove_webhook()
+    bot.set_webhook(url=getenv("webhook"))
+
+    # Start polling
+    bot.polling()
