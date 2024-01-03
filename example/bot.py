@@ -11,7 +11,7 @@ from urllib.parse import unquote
 from os import getenv
 
 # Initialize the bot with your token
-bot = telebot.TeleBot(getenv("TOKEN"))
+bot = telebot.TeleBot("6923585464:AAHCOf8QQtiyPvmX4B_X5PFJhu82VfkwPrA", threaded=True)
 
 setlan = None
 usernum = 0
